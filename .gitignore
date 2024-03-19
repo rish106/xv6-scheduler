@@ -1,2 +1,13 @@
 .DS_Store
 *.o
+*.d
+vectors.S
+*.asm
+*.out
+*.img
+bootblock
+initcode
+kernel
+*.sym
+mkfs
+_init

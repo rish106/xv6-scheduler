@@ -10,13 +10,18 @@
 int 
 sys_set_sched_policy(void)
 {
-    // Implement your code here 
-    return -1;
+    int policy;
+    if (argint(0, &policy) < 0 || ((policy != 0) && (policy != 1))) {
+        return -22;
+    }
+    struct proc *p = myproc();
+    p->policy = policy;
+    return 0;
 }
 
 int 
 sys_get_sched_policy(void)
 {
-    // Implement your code here 
-    return -1;
+    struct proc *p = myproc();
+    return p->policy;
 }
