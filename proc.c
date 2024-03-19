@@ -132,6 +132,7 @@ scheduler(void)
     uint bg_count = 0;
     uint fg_count = 0;
 
+    // count background and foreground processes
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
       if (p->state != RUNNABLE) {
         continue;
@@ -139,6 +140,7 @@ scheduler(void)
       p->policy ? bg_count++ : fg_count++;
     }
 
+    // cycle through all processes equally if either one is zero
     if (fg_count == 0 || bg_count == 0) {
       for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
         if (p->state != RUNNABLE) {
@@ -152,50 +154,73 @@ scheduler(void)
       continue;
     }
 
+    // switch to background process
     if (counter == 9) {
+
+      // find next background process in proc table
       while (1) {
+
         bg_p++;
         if (bg_p == &ptable.proc[NPROC]) {
           bg_p = ptable.proc;
         }
+
         if (bg_p->state == RUNNABLE && bg_p->policy == 1) {
           found = 1;
           break;
         } else if (bg_p == prev_bg_p) {
           break;
         }
+
       }
-      if (found) {
-        counter = 0;
-        found = 0;
-        prev_bg_p = bg_p;
-        c->proc = bg_p;
-        bg_p->state = RUNNING;
-        switchuvm(bg_p);
-        swtch(&(c->scheduler), bg_p->context);
+
+      if (!found) {
+        continue;
       }
+
+      // update variables and switch to process
+      counter = 0;
+      found = 0;
+      prev_bg_p = bg_p;
+
+      c->proc = bg_p;
+      bg_p->state = RUNNING;
+      switchuvm(bg_p);
+      swtch(&(c->scheduler), bg_p->context);
+
     } else {
+
+      // find next foreground process in proc table
       while (1) {
+
         fg_p++;
         if (fg_p == &ptable.proc[NPROC]) {
           fg_p = ptable.proc;
         }
+
         if (fg_p->state == RUNNABLE && fg_p->policy == 0) {
           found = 1;
           break;
         } else if (fg_p == prev_fg_p) {
           break;
         }
+
       }
-      if (found) {
-        counter++;
-        found = 0;
-        prev_fg_p = fg_p;
-        c->proc = fg_p;
-        fg_p->state = RUNNING;
-        switchuvm(fg_p);
-        swtch(&(c->scheduler), fg_p->context);
+
+      if (!found) {
+        continue;
       }
+
+      // update variables and switch to process
+      counter++;
+      found = 0;
+      prev_fg_p = fg_p;
+
+      c->proc = fg_p;
+      fg_p->state = RUNNING;
+      switchuvm(fg_p);
+      swtch(&(c->scheduler), fg_p->context);
+
     }
   }
 }

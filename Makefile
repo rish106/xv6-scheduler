@@ -150,7 +150,7 @@ clean:
 	rm -f *.tex *.dvi *.idx *.aux *.log *.ind *.ilg \
 	*.o *.d *.asm *.sym bootblock \
 	kernel xv6.img vectors.S \
-	.gdbinit mkfs fs.img initcode \
+	.gdbinit mkfs fs.img initcode initcode.out \
 	$(UPROGS)
 
 # try to generate a unique GDB port
